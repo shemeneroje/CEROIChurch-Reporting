@@ -425,3 +425,210 @@ body.settings {
 .settings-container .profile-info strong {
     color: #002147;
 }
+
+.givings-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.giving-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: nowrap; /* prevent amount and comment from stacking */
+}
+
+.giving-item span {
+    min-width: 180px; /* label width */
+    font-weight: 500;
+}
+
+.giving-amount {
+    width: 160px; 
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #0072bc;
+}
+
+.giving-comment {
+    width: 160px; 
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #0072bc;
+}
+
+/* Giving Table Styles */
+.givings-table {
+    margin-top: 1.5em;
+    overflow-x: auto;
+}
+
+.givings-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.givings-table th,
+.givings-table td {
+    border: 1px solid #0072bc;
+    padding: 10px 12px;
+    text-align: left;
+}
+
+.givings-table th {
+    background: linear-gradient(90deg, #002147 0%, #0072bc 100%);
+    color: #fff;
+    font-weight: 700;
+}
+
+.givings-table tbody tr:nth-child(even) {
+    background-color: #f4f8fb;
+}
+
+.givings-table tbody tr:hover {
+    background-color: #e3eafc;
+}
+
+.givings-table input[type="number"].giving-amount,
+.givings-table input[type="text"].giving-comment {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #0072bc;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+}
+
+.givings-table input[type="number"].giving-amount {
+    width: 120px; /* Bigger than comment box */
+}
+
+.givings-table input[type="text"].giving-comment {
+    width: 90px; /* Smaller comment box */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .givings-table th, 
+    .givings-table td {
+        font-size: 0.85rem;
+        padding: 6px 8px;
+    }
+
+    .givings-table input[type="number"].giving-amount {
+        width: 100px;
+    }
+
+    .givings-table input[type="text"].giving-comment {
+        width: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .givings-table th,
+    .givings-table td {
+        font-size: 0.75rem;
+        padding: 4px 6px;
+    }
+
+    .givings-table input[type="number"].giving-amount {
+        width: 80px;
+    }
+
+    .givings-table input[type="text"].giving-comment {
+        width: 70px;
+    }
+}
+
+ /* Table Styling */
+        .givings-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .givings-table th,
+        .givings-table td {
+            border: 1px solid #0072bc;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .givings-table th {
+            background-color: #f0f4f8;
+            font-weight: 600;
+        }
+
+        .giving-amount,
+        .giving-comment {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #0072bc;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        button.button {
+            padding: 10px 16px;
+            background-color: #0072bc;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button.button:hover {
+            background-color: #005fa3;
+        }
+
+        /* Dropdown */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropbtn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            padding: 8px 16px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #005fa3;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f0f4f8;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+

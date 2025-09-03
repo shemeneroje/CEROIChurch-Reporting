@@ -54,6 +54,7 @@ if (signupForm) {
         const phone = document.getElementById('signup-phone').value;
         const zone = document.getElementById('signup-zone').value;
         const group = document.getElementById('signup-group').value;
+        const role = document.getElementById('signup-role').value;
         const church = document.getElementById('signup-church').value;
         const designationEls = document.querySelectorAll('#signup-designation input[type="checkbox"]:checked');
         const designations = Array.from(designationEls).map(el => el.value);
@@ -77,6 +78,7 @@ if (signupForm) {
                 zone,
                 group,
                 church,
+                role,
                 designations,
                 createdAt: new Date().toISOString()
             });

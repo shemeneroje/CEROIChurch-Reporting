@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Church Reporting</title>
   <link rel="stylesheet" href="style.css">
+  <script type="module" src="javascripts/auth.js"></script>
 </head>
 <body>
   <div class="container" id="auth-section">
@@ -241,6 +242,20 @@
                 <label><input type="checkbox" value="Member"> Member</label>
             </div>
         </div>
+        <div class="form-group">
+          <label for="signup-role">Select Role</label>
+          <select id="signup-role" required>
+            <option value="">-- Select Role --</option>
+            <option value="Zonal Pastor">Zonal Pastor</option>
+            <option value="Group Pastor">Group Pastor</option>
+            <option value="Pastor">Pastor</option>
+            <option value="Church Coordinator">Church Coordinator</option>
+            <option value="Outreach Coordinator">Outreach Coordinator</option>
+            <option value="Member">Member</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+
         <input type="password" id="signup-password" placeholder="Password" required />
         <!-- Signup button -->
         <button type="submit" class="button signup">Signup</button>
@@ -256,7 +271,6 @@
     <button id="logout-btn" class="button logout-btn">Logout</button>
   </div>
 
-  <!-- Link to external JS file -->
-  <script type="module" src="auth.js"></script>
+
 </body>
 </html>

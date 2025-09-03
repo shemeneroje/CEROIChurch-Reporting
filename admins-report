@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Church Admin Reports</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="javascripts/admin-reports.js"></script>
+</head>
+<body class="home">
+  <nav class="navbar">
+    <div class="logo">
+      <a href="home.html"><strong>Church Reporting</strong></a>
+    </div>
+    <div class="menu">
+      <a href="home.html">Home</a>
+      <a href="admin-reports.html" class="active">Admin Reports</a>
+      <a href="settings.html">Settings</a>
+      <button class="button logout" id="logout-btn">Logout</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container" style="margin-top:5em;">
+      <h1>Admin – Church Givings</h1>
+      <p id="church-name"></p>
+      <table id="givings-table" border="1" style="width:100%; margin-top:1em;">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Service</th>
+            <th>Payment</th>
+            <th>Giving Type</th>
+            <th>Amount (€)</th>
+            <th>Additional Info</th>
+            <th>Recorded By</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>
