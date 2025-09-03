@@ -1,10 +1,6 @@
 // Import Firebase functions
-import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-import {
-    getAnalytics
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
 import {
     getAuth,
     setPersistence,
@@ -12,14 +8,16 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     updateProfile,
-    onAuthStateChanged,
+    sendEmailVerification,
     signOut,
     GoogleAuthProvider,
     signInWithPopup,
-    OAuthProvider
+    OAuthProvider,
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-// Your Firebase config
+// Firebase config
 const firebaseConfig = {
     apiKey: "AIzaSyDKGHkuy3BssxINilas---1CHiyD-ivfaA",
     authDomain: "church-reporting-f932f.firebaseapp.com",
@@ -34,102 +32,194 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Set persistence (keep user logged in after refresh/close)
+// Keep user logged in after refresh
 setPersistence(auth, browserLocalPersistence)
     .then(() => console.log("Persistence set to local"))
     .catch((error) => console.error("Persistence error:", error));
 
-// Signup (Email/Password)
-document.querySelector('#signup-form form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('signup-name').value;
-    const email = document.getElementById('signup-email').value;
-    const password = document.getElementById('signup-password').value;
+// ------------------- SIGNUP -------------------
+const signupForm = document.querySelector('#signup-form form');
+if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            return updateProfile(userCredential.user, { displayName: name });
-        })
-        .then(() => {
-            alert('Signup successful!');
-            showLogin();
-        })
-        .catch((error) => {
+        const title = document.getElementById('signup-title').value;
+        const firstName = document.getElementById('signup-firstname').value;
+        const surname = document.getElementById('signup-surname').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const countryCode = document.getElementById('signup-country-code').value;
+        const phone = document.getElementById('signup-phone').value;
+        const zone = document.getElementById('signup-zone').value;
+        const group = document.getElementById('signup-group').value;
+        const church = document.getElementById('signup-church').value;
+        const designationEls = document.querySelectorAll('#signup-designation input[type="checkbox"]:checked');
+        const designations = Array.from(designationEls).map(el => el.value);
+        const fullPhone = `${countryCode}${phone}`;
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+            await updateProfile(userCredential.user, {
+                displayName: `${title} ${firstName} ${surname}`
+            });
+
+            // Save additional info to Firestore
+            await setDoc(doc(db, "users", userCredential.user.uid), {
+                uid: userCredential.user.uid,
+                title,
+                firstName,
+                surname,
+                email,
+                phone: fullPhone,
+                zone,
+                group,
+                church,
+                designations,
+                createdAt: new Date().toISOString()
+            });
+
+            // Send verification email
+            await sendEmailVerification(userCredential.user);
+
+            alert('Signup successful! Please check your email to verify your account.');
+            window.location.href = 'index.html'; // Redirect to login page
+
+        } catch (error) {
             alert(error.message);
-        });
-});
-
-// Login (Email/Password)
-document.querySelector('#login-form form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-
-    signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-            alert('Login successful!');
-        })
-        .catch((error) => {
-            alert(error.message);
-        });
-});
-
-// Google Sign-In
-document.getElementById('google-login').addEventListener('click', () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            const user = result.user;
-            alert(`Welcome, ${user.displayName}`);
-        })
-        .catch((error) => {
-            alert(error.message);
-        });
-});
-
-// Apple Sign-In
-document.getElementById('apple-login').addEventListener('click', () => {
-    const provider = new OAuthProvider('apple.com');
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            const user = result.user;
-            alert(`Welcome, ${user.displayName || user.email}`);
-        })
-        .catch((error) => {
-            alert(error.message);
-        });
-});
-
-// Detect auth state changes
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        document.getElementById('welcome').textContent = `Welcome, ${user.displayName || user.email}`;
-    } else {
-        document.getElementById('auth-section').style.display = 'block';
-        document.getElementById('dashboard').style.display = 'none';
-    }
-});
-
-// Logout
-document.getElementById('logout-btn').addEventListener('click', () => {
-    signOut(auth).then(() => {
-        alert("Logged out!");
-    }).catch((error) => {
-        console.error("Logout error:", error);
+        }
     });
-});
-
-// Show/hide forms
-window.showSignup = function () {
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('signup-form').style.display = 'block';
 }
-window.showLogin = function () {
-    window.showLogin = function () {
-        document.getElementById('signup-form').style.display = 'none';
-        document.getElementById('login-form').style.display = 'block';
+
+// ------------------- LOGIN -------------------
+const loginForm = document.querySelector('#login-form form');
+if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                alert('Login successful!');
+                window.location.href = 'home.html'; // Redirect to home page
+            })
+            .catch((error) => {
+                alert('Login failed: ' + error.message);
+            });
+    });
+}
+
+// ------------------- GOOGLE SIGN-IN -------------------
+const googleLoginBtn = document.getElementById('google-login');
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                alert(`Welcome, ${result.user.displayName || result.user.email}`);
+                window.location.href = 'home.html';
+            })
+            .catch((error) => alert(error.message));
+    });
+}
+
+// ------------------- APPLE SIGN-IN -------------------
+const appleLoginBtn = document.getElementById('apple-login');
+if (appleLoginBtn) {
+    appleLoginBtn.addEventListener('click', () => {
+        const provider = new OAuthProvider('apple.com');
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                alert(`Welcome, ${result.user.displayName || result.user.email}`);
+                window.location.href = 'home.html';
+            })
+            .catch((error) => alert(error.message));
+    });
+}
+
+// ------------------- LOGOUT -------------------
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        signOut(auth)
+            .then(() => {
+                alert('Logged out successfully!');
+                window.location.href = 'index.html';
+            })
+            .catch((error) => alert('Logout failed: ' + error.message));
+    });
+}
+
+// ------------------- SHOW/HIDE FORMS -------------------
+window.showSignup = function () {
+    const loginFormDiv = document.getElementById('login-form');
+    const signupFormDiv = document.getElementById('signup-form');
+    if (loginFormDiv && signupFormDiv) {
+        loginFormDiv.style.display = 'none';
+        signupFormDiv.style.display = 'block';
     }
 }
+
+window.showLogin = function () {
+    const loginFormDiv = document.getElementById('login-form');
+    const signupFormDiv = document.getElementById('signup-form');
+    if (loginFormDiv && signupFormDiv) {
+        signupFormDiv.style.display = 'none';
+        loginFormDiv.style.display = 'block';
+    }
+}
+
+// ------------------- AUTH STATE CHANGE -------------------
+if (window.location.pathname.endsWith('home.html')) {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                const greeting = document.getElementById('greeting');
+                if (greeting) {
+                    greeting.textContent = `Greetings ${data.title} ${data.firstName} ${data.surname}! Use the menu above to view reports or update your settings and profile.`;
+                }
+            }
+        } else {
+            // Not logged in, redirect to login
+            window.location.href = 'index.html';
+        }
+    });
+}
+
+// ------------------- PROFILE DETAILS (Settings Page) -------------------
+if (window.location.pathname.endsWith('settings.html')) {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+
+                    // Fill profile details
+                    document.getElementById('profile-title').textContent = data.title || '';
+                    document.getElementById('profile-firstname').textContent = data.firstName || '';
+                    document.getElementById('profile-surname').textContent = data.surname || '';
+                    document.getElementById('profile-zone').textContent = data.zone || '';
+                    document.getElementById('profile-chapter').textContent = data.group || '';
+                    document.getElementById('profile-church').textContent = data.church || '';
+                    document.getElementById('profile-designation').textContent = data.designations?.join(', ') || '';
+                    document.getElementById('profile-email').textContent = data.email || user.email;
+                    document.getElementById('profile-phone').textContent = data.phone || '';
+                } else {
+                    console.error("No profile document found for this user.");
+                }
+            } catch (err) {
+                console.error("Error fetching profile:", err);
+            }
+        } else {
+            // Not signed in → redirect to login
+            window.location.href = 'index.html';
+        }
+    });
+}
+
