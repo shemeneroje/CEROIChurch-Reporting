@@ -5,21 +5,44 @@
     <title>Settings</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="javascripts/auth.js"></script>
+    <script type="module" src="javascripts/settings.js"></script>
+    <script type="module" src="javascripts/role-access.js"></script>
+
 </head>
 <body class="home">
-    <nav class="navbar">
+     <nav class="navbar">
         <div class="logo">
             <a href="home.html"><strong>Church Reporting</strong></a>
         </div>
         <div class="menu">
             <a href="home.html">Home</a>
-            <a href="reports.html">Reports</a>
-            <a href="settings.html" class="active">Settings</a>
-            <button class="nav-box logout" id="logout-btn">Logout</button>
+
+            <!-- Reports Dropdown -->
+            <div class="dropdown">
+            <button class="dropbtn">Reports ▾</button>
+            <div class="dropdown-content">
+                <a href="reports.html">Record Giving</a>
+                <a href="my-history.html">My Report History</a>
+                <a href="my-statement.html">Generate My Report Statement</a>
+
+                <!-- Admin & Church Pastor -->
+                <a href="church-history.html" class="admin-only">Church Report History</a>
+                <a href="church-statement.html" class="admin-only">Generate Church Statement</a>
+
+                <!-- Group Pastor -->
+                <a href="group-reports.html" class="group-only">Group Reports</a>
+
+                <!-- Zonal Pastor -->
+                <a href="zonal-reports.html" class="zonal-only">Zonal Overview</a>
+            </div>
+            </div>
+
+            <a href="settings.html">Settings</a>
+            <button class="button logout" id="logout-btn" style="margin-left:1em;">Logout</button>
         </div>
     </nav>
     <main>
-        <div class="container" style="margin-top:5em;">
+        <div class="container">
             <section class="profile-section">
                 <h2>Your Profile</h2>
                 <div class="profile-details">
@@ -32,6 +55,7 @@
                     <div><strong>Designation:</strong> <span id="profile-designation">Loading…</span></div>
                     <div><strong>Email Address:</strong> <span id="profile-email">Loading…</span></div>
                     <div><strong>Phone Number:</strong> <span id="profile-phone">Loading…</span></div>
+                    <div><strong>Role:</strong> <span id="profile-role">Loading…</span></div>
                 </div>
             </section>
         </div>

@@ -5,16 +5,41 @@
 <title>My Giving History</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="style.css">
+<script type="module" src="javascripts/auth.js"></script>
 <script type="module" src="javascripts/my-history.js"></script>
+<script type="module" src="javascripts/role-access.js"></script>
+
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo"><a href="home.html"><strong>Church Reporting</strong></a></div>
+     <nav class="navbar">
+        <div class="logo">
+            <a href="home.html"><strong>Church Reporting</strong></a>
+        </div>
         <div class="menu">
             <a href="home.html">Home</a>
-            <a href="my-history.html" class="active">My History</a>
-            <a href="reports.html">Record Giving</a>
-            <button class="button logout" id="logout-btn">Logout</button>
+
+            <!-- Reports Dropdown -->
+            <div class="dropdown">
+            <button class="dropbtn">Reports ▾</button>
+            <div class="dropdown-content">
+                <a href="reports.html">Record Giving</a>
+                <a href="my-history.html">My Report History</a>
+                <a href="my-statement.html">Generate My Report Statement</a>
+
+                <!-- Admin & Church Pastor -->
+                <a href="church-history.html" class="admin-only">Church Report History</a>
+                <a href="church-statement.html" class="admin-only">Generate Church Statement</a>
+
+                <!-- Group Pastor -->
+                <a href="group-reports.html" class="group-only">Group Reports</a>
+
+                <!-- Zonal Pastor -->
+                <a href="zonal-reports.html" class="zonal-only">Zonal Overview</a>
+            </div>
+            </div>
+
+            <a href="settings.html">Settings</a>
+            <button class="button logout" id="logout-btn" style="margin-left:1em;">Logout</button>
         </div>
     </nav>
 

@@ -193,35 +193,4 @@ if (window.location.pathname.endsWith('home.html')) {
     });
 }
 
-// ------------------- PROFILE DETAILS (Settings Page) -------------------
-if (window.location.pathname.endsWith('settings.html')) {
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            try {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-
-                    // Fill profile details
-                    document.getElementById('profile-title').textContent = data.title || '';
-                    document.getElementById('profile-firstname').textContent = data.firstName || '';
-                    document.getElementById('profile-surname').textContent = data.surname || '';
-                    document.getElementById('profile-zone').textContent = data.zone || '';
-                    document.getElementById('profile-chapter').textContent = data.group || '';
-                    document.getElementById('profile-church').textContent = data.church || '';
-                    document.getElementById('profile-designation').textContent = data.designations?.join(', ') || '';
-                    document.getElementById('profile-email').textContent = data.email || user.email;
-                    document.getElementById('profile-phone').textContent = data.phone || '';
-                } else {
-                    console.error("No profile document found for this user.");
-                }
-            } catch (err) {
-                console.error("Error fetching profile:", err);
-            }
-        } else {
-            // Not signed in → redirect to login
-            window.location.href = 'index.html';
-        }
-    });
-}
 

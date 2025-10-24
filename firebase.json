@@ -1,0 +1,36 @@
+{
+  "specVersion": "v1",
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "emulators": {
+    "firestore": {
+      "host": "127.0.0.1",
+      "port": 8085
+    },
+    "dataconnect": {
+      "source": "dataconnect",
+      "host": "127.0.0.1",
+      "port": 9599
+    },
+    "hosting": {
+      "host": "127.0.0.1",
+      "port": 5050
+    }
+  },
+  "dataconnect": [
+    {
+      "name": "churchreporting",
+      "source": "dataconnect"
+    }
+  ]
+}
