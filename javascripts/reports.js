@@ -1,14 +1,10 @@
-// reports.js
-import { 
-  getFirestore, doc, getDoc, collection, addDoc 
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+// report.js
+import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 const db = getFirestore();
 const auth = getAuth();
 const form = document.getElementById("giving-form");
-
-
 const successModal = document.getElementById("success-modal");
 const closeModalBtn = document.getElementById("close-modal");
 
@@ -24,15 +20,13 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // Load user profile
   const userSnap = await getDoc(doc(db, "users", user.uid));
   if (!userSnap.exists()) {
-    console.error("User profile not found in Firestore.");
+    console.error("user profile not found in firestore");
     return;
   }
   const userData = userSnap.data();
 
-  // Submit handler
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -41,14 +35,13 @@ onAuthStateChanged(auth, async (user) => {
     const payment = document.getElementById("payment-method").value;
 
     if (!date || !service || !payment) {
-      alert("Please fill in all required fields.");
+      alert("please fill in all required fields");
       return;
     }
 
     const submitBtn = form.querySelector("button[type='submit']");
     submitBtn.disabled = true;
 
-    // Collect givings (ignore zero amounts)
     const rows = document.querySelectorAll(".givings-table tbody tr");
     const givings = {};
     let total = 0;
@@ -69,7 +62,7 @@ onAuthStateChanged(auth, async (user) => {
       group: userData.group || "",
       zone: userData.zone || "",
       role: userData.role || "",
-      date,                      // yyyy-mm-dd
+      date,
       serviceType: service,
       paymentMethod: payment,
       givings,
@@ -78,14 +71,14 @@ onAuthStateChanged(auth, async (user) => {
     };
 
     try {
-      await addDoc(collection(db, "reports"), reportData);
+      // save inside the user's church
+      await addDoc(collection(db, "churches", userData.church, "givings"), reportData);
 
-      // Show success modal and reset form
       successModal.style.display = "flex";
       form.reset();
     } catch (err) {
-      console.error("Error saving report:", err);
-      alert("An error occurred while submitting the report. Please try again.");
+      console.error("error saving report:", err);
+      alert("an error occurred while submitting the report. please try again.");
     } finally {
       submitBtn.disabled = false;
     }

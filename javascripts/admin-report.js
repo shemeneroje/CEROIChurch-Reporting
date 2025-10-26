@@ -1,59 +1,70 @@
-// admin-reports.js
-import { 
-  getFirestore, collection, getDocs, doc, getDoc 
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+// admin-report.js
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 const db = getFirestore();
 const auth = getAuth();
+const reportDiv = document.getElementById("admin-report");
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    alert("You must be logged in as an admin.");
     window.location.href = "index.html";
     return;
   }
 
-  // Fetch user profile
-  const userDoc = await getDoc(doc(db, "users", user.uid));
-  if (!userDoc.exists()) {
-    alert("No user profile found.");
-    return;
-  }
-
-  const userData = userDoc.data();
-  const { church, role } = userData;
-
-  if (role !== "admin") {
-    alert("You are not authorized to view this page.");
-    window.location.href = "home.html";
-    return;
-  }
-
-  document.getElementById("church-name").innerText = "Church: " + church;
-
-  // Fetch church givings
-  const givingsRef = collection(db, "churches", church, "givings");
-  const snapshot = await getDocs(givingsRef);
-
-  const tbody = document.querySelector("#givings-table tbody");
-  tbody.innerHTML = "";
-
-  snapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-
-    data.givings.forEach((g) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${data.date}</td>
-        <td>${data.serviceType}</td>
-        <td>${data.paymentMethod}</td>
-        <td>${g.type}</td>
-        <td>€${g.amount}</td>
-        <td>${g.comment || ""}</td>
-        <td>${data.userId}</td>
-      `;
-      tbody.appendChild(row);
+  try {
+    const userSnap = await getDocs(collection(db, "users"));
+    let userData = null;
+    userSnap.forEach(doc => {
+      if (doc.id === user.uid) userData = doc.data();
     });
-  });
+
+    if (!userData) {
+      alert("user profile not found");
+      return;
+    }
+
+    const churchName = userData.church;
+    const givingsRef = collection(db, "churches", churchName, "givings");
+    const q = query(givingsRef, orderBy("date"));
+    const snapshot = await getDocs(q);
+
+    const allReports = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      allReports.push({
+        submittedBy: data.submittedBy,
+        church: data.church,
+        serviceType: data.serviceType,
+        date: data.date,
+        totalAmount: data.totalAmount
+      });
+    });
+
+    if (!allReports.length) {
+      reportDiv.innerHTML = "<p>no reports found for this church.</p>";
+      return;
+    }
+
+    let html = "<table><thead><tr>";
+    Object.keys(allReports[0]).forEach(key => {
+      html += `<th>${key}</th>`;
+    });
+    html += "</tr></thead><tbody>";
+
+    allReports.forEach(row => {
+      html += "<tr>";
+      Object.values(row).forEach(val => {
+        html += `<td>${val}</td>`;
+      });
+      html += "</tr>";
+    });
+    html += "</tbody></table>";
+
+    reportDiv.innerHTML = html;
+
+  } catch (error) {
+    console.error("error loading admin report:", error);
+    alert("error loading admin report. check console for details.");
+  }
 });
